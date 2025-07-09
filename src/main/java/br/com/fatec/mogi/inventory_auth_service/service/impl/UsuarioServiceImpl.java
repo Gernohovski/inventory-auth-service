@@ -9,7 +9,7 @@ import br.com.fatec.mogi.inventory_auth_service.repository.FuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioFuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioRepository;
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CriarUsuarioRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	@Transactional
-	public Usuario cadastrarUsuario(CriarUsuarioRequestDTO dto) {
+	public Usuario cadastrarUsuario(CadastrarUsuarioRequestDTO dto) {
 		usuarioRepository.findByEmail(dto.getEmail()).ifPresent(usuario -> {
 			throw new EmailJaUtilizadoException("E-mail já utilizado.");
 		});

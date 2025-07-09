@@ -2,7 +2,7 @@ package br.com.fatec.mogi.inventory_auth_service.web;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CriarUsuarioRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public record UsuarioController(UsuarioService usuarioService) {
 
 	@PostMapping
-	public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody CriarUsuarioRequestDTO dto) {
+	public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody CadastrarUsuarioRequestDTO dto) {
 		var usuario = usuarioService.cadastrarUsuario(dto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
 	}
