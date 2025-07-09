@@ -11,8 +11,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class UsuarioFuncaoId implements Serializable {
 
-	private Long usuarioId;
+	private Long usuario;
 
-	private Long funcaoId;
+	private Long funcao;
 
 }

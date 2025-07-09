@@ -27,12 +27,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	@Transactional
 	public Usuario cadastrarUsuario(CadastrarUsuarioRequestDTO dto) {
-		usuarioRepository.findByEmail(dto.getEmail()).ifPresent(usuario -> {
-			throw new EmailJaUtilizadoException("E-mail já utilizado.");
-		});
 		Funcao funcao = funcaoRepository.findById(dto.getFuncaoId())
 			.orElseThrow(() -> new FuncaoNaoEncontrada("Função não encontrada"));
 		Usuario usuario = new Usuario(dto.getNome(), dto.getSenha(), dto.getEmail());
+		usuarioRepository.findByEmail(usuario.getEmail()).ifPresent(u -> {
+			throw new EmailJaUtilizadoException("E-mail já utilizado.");
+		});
 		Usuario usuarioSalvo = usuarioRepository.save(usuario);
 		usuarioFuncaoRepository.save(new UsuarioFuncao(usuarioSalvo, funcao));
 		return usuarioSalvo;

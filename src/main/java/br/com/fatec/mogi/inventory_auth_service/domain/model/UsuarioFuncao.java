@@ -16,12 +16,12 @@ public class UsuarioFuncao {
 
 	@Id
 	@ManyToOne
-	@JoinColumn(name = "usf_usr_id")
+	@JoinColumn(name = "usuario_id")
 	private Usuario usuario;
 
 	@Id
 	@ManyToOne
-	@JoinColumn(name = "usf_fnc_id")
+	@JoinColumn(name = "funcao_id")
 	private Funcao funcao;
 
 }

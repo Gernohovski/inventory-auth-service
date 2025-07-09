@@ -14,11 +14,9 @@ import lombok.NoArgsConstructor;
 public class Funcao {
 
 	@Id
-	@Column(name = "fnc_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "fnc_nome")
 	private String nome;
 
 }

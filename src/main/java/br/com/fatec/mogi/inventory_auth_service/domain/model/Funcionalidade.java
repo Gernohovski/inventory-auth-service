@@ -14,11 +14,9 @@ import lombok.NoArgsConstructor;
 public class Funcionalidade {
 
 	@Id
-	@Column(name = "fnl_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "fnl_funcionalidade")
 	private String funcionalidade;
 
 }
