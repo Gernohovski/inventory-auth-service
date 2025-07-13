@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     senha VARCHAR(255) NOT NULL,
+    ativo BOOLEAN,
     data_criacao TIMESTAMP,
     data_alteracao TIMESTAMP,
     CONSTRAINT uk_usuario_email UNIQUE (email)
