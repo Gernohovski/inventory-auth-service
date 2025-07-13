@@ -21,7 +21,7 @@ import java.util.Map;
 @Profile("!test")
 public class EmailServiceImpl implements EmailService {
 
-	@Value("${mail-trap-token}")
+	@Value("${mail.trap.token}")
 	private String apiToken;
 
 	@Value("${auth.email.sender}")
