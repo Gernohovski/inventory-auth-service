@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum TipoCache {
 
-	SESSAO("cache-sessao-usuario"), REFRESH_TOKEN("cache-refresh-token");
+	REFRESH_TOKEN("cache-refresh-token");
 
 	private final String nome;
 
