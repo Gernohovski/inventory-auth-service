@@ -69,8 +69,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 
 	@Override
 	public DecodedJWT decodeJwt(String jwt) {
-		JWTVerifier verifier = JWT.require(algorithm)
-				.build();
+		JWTVerifier verifier = JWT.require(algorithm).build();
 
 		return verifier.verify(jwt);
 	}
@@ -86,7 +85,11 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	}
 
 	private String gerarRefreshToken(String email) {
-		return JWT.create().withSubject(email).withIssuedAt(new Date()).withJWTId(UUID.randomUUID().toString()).sign(algorithm);
+		return JWT.create()
+			.withSubject(email)
+			.withIssuedAt(new Date())
+			.withJWTId(UUID.randomUUID().toString())
+			.sign(algorithm);
 	}
 
 }
