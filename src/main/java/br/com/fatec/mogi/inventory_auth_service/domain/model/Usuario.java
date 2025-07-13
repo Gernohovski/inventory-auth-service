@@ -27,6 +27,8 @@ public class Usuario {
 	@Embedded
 	private Email email;
 
+	private boolean ativo;
+
 	private LocalDateTime dataCriacao;
 
 	private LocalDateTime dataAlteracao;

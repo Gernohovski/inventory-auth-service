@@ -75,6 +75,11 @@
 			<version>5.5.5</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.mailtrap</groupId>
+			<artifactId>mailtrap-java</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
