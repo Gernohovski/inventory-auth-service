@@ -2,6 +2,7 @@ package br.com.fatec.mogi.inventory_auth_service.service.impl;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.exception.EmailJaUtilizadoException;
 import br.com.fatec.mogi.inventory_auth_service.domain.exception.FuncaoNaoEncontrada;
+import br.com.fatec.mogi.inventory_auth_service.domain.exception.LoginInvalidoException;
 import br.com.fatec.mogi.inventory_auth_service.domain.exception.UsuarioNaoEncontradoException;
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Funcao;
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
@@ -10,12 +11,16 @@ import br.com.fatec.mogi.inventory_auth_service.domain.model.valueObjects.Email;
 import br.com.fatec.mogi.inventory_auth_service.repository.FuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioFuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioRepository;
+import br.com.fatec.mogi.inventory_auth_service.service.AutenticacaoService;
 import br.com.fatec.mogi.inventory_auth_service.service.EmailService;
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +28,8 @@ import org.springframework.stereotype.Service;
 public class UsuarioServiceImpl implements UsuarioService {
 
 	private final EmailService emailService;
+
+	private final AutenticacaoService autenticacaoService;
 
 	private final UsuarioRepository usuarioRepository;
 
@@ -54,6 +61,16 @@ public class UsuarioServiceImpl implements UsuarioService {
 		usuario.setAtivo(true);
 		usuarioRepository.save(usuario);
 		return true;
+	}
+
+	@Override
+	public LoginResponseDTO login(LoginRequestDTO dto) {
+		var usuario = usuarioRepository.findByEmail(new Email(dto.getEmail()))
+				.orElseThrow(LoginInvalidoException::new);
+		if (!BCrypt.checkpw(dto.getSenha(), usuario.getSenha().getSenha())) {
+			throw new LoginInvalidoException();
+		}
+		return autenticacaoService.gerarAutenticacao(usuario);
 	}
 
 }
