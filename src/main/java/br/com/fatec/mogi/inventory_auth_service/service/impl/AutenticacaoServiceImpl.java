@@ -1,10 +1,13 @@
 package br.com.fatec.mogi.inventory_auth_service.service.impl;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.enums.TipoCache;
+import br.com.fatec.mogi.inventory_auth_service.domain.exception.UsuarioNaoAutenticadoException;
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
 import br.com.fatec.mogi.inventory_auth_service.service.AutenticacaoService;
 import br.com.fatec.mogi.inventory_auth_service.service.RedisService;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.RefreshTokenRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.response.RefreshTokenResponseDTO;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +38,20 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	public LoginResponseDTO gerarAutenticacao(Usuario usuario) {
         var accessToken = this.gerarToken(usuario);
         var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
-        redisService.salvar(TipoCache.SESSAO, accessToken, usuario, expiration);
+		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, usuario, refreshExpiration);
 		return new LoginResponseDTO(accessToken, refreshToken, expiration);
+	}
+
+	@Override
+	public RefreshTokenResponseDTO gerarAutenticacao(RefreshTokenRequestDTO dto) {
+		var usuario = (Usuario) redisService.buscar(TipoCache.REFRESH_TOKEN, dto.getRefreshToken());
+		if (usuario == null) {
+			throw new UsuarioNaoAutenticadoException();
+		}
+		var accessToken = this.gerarToken(usuario);
+		var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
+		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, usuario, refreshExpiration);
+		return new RefreshTokenResponseDTO(accessToken, refreshToken, expiration);
 	}
 
 	private String gerarToken(Usuario usuario) {
@@ -49,9 +64,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	}
 
 	public String gerarRefreshToken(String email) {
-		var refreshToken = JWT.create().withSubject(email).withIssuedAt(new Date()).sign(algorithm);
-		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, email, refreshExpiration);
-		return refreshToken;
+        return JWT.create().withSubject(email).withIssuedAt(new Date()).sign(algorithm);
 	}
 
 }
