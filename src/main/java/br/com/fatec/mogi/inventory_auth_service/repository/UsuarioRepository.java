@@ -14,14 +14,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
 	Optional<Usuario> findByEmail(Email email);
 
-	@Query(value = """
-			    SELECT COUNT(uf) > 0
-			    FROM Usuario u
-			    JOIN u.usuarioFuncoes uf
-			    JOIN uf.funcao f
-			    JOIN f.funcionalidades func
-			    WHERE u.id = :usuarioId
-			    AND func.funcionalidade = :funcionalidade
+	@Query("""
+				SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END
+				FROM UsuarioFuncao uf
+				JOIN uf.funcao f
+				JOIN f.funcionalidades func
+				WHERE uf.usuario.id = :usuarioId
+				  AND func.funcionalidade = :funcionalidade
 			""")
 	boolean possuiFuncionalidade(@Param("usuarioId") Long usuarioId, @Param("funcionalidade") String funcionalidade);
 
