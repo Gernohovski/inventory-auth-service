@@ -11,10 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("integration")
+@ActiveProfiles("test")
 public class UsuarioControllerTest {
 
 	@LocalServerPort
@@ -162,21 +163,21 @@ public class UsuarioControllerTest {
 
 	private void cadastrarUsuario(String email, String senha) {
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email(email)
-				.senha(senha)
-				.funcaoId(1L)
-				.build();
+			.nome("Usuario teste")
+			.email(email)
+			.senha(senha)
+			.funcaoId(1L)
+			.build();
 		RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(cadastrarUsuarioRequestDTO)
-				.log()
-				.all()
-				.when()
-				.post("/auth-service/v1/usuarios")
-				.then()
-				.statusCode(201);
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(cadastrarUsuarioRequestDTO)
+			.log()
+			.all()
+			.when()
+			.post("/auth-service/v1/usuarios")
+			.then()
+			.statusCode(201);
 	}
 
 }

@@ -50,6 +50,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 		var accessToken = this.gerarToken(usuario);
 		var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
 		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, usuario, refreshExpiration);
+		redisService.salvar(TipoCache.SESSAO_USUARIO, accessToken, usuario, expiration);
 		return new LoginResponseDTO(accessToken, refreshToken, expiration);
 	}
 
@@ -62,13 +63,13 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 		var accessToken = this.gerarToken(usuario);
 		var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
 		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, usuario, refreshExpiration);
+		redisService.salvar(TipoCache.SESSAO_USUARIO, accessToken, usuario, expiration);
 		return new RefreshTokenResponseDTO(accessToken, refreshToken, expiration);
 	}
 
 	@Override
 	public DecodedJWT decodeJwt(String jwt) {
-		JWTVerifier verifier = JWT.require(algorithm)
-				.build();
+		JWTVerifier verifier = JWT.require(algorithm).build();
 
 		return verifier.verify(jwt);
 	}
@@ -84,7 +85,11 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	}
 
 	private String gerarRefreshToken(String email) {
-		return JWT.create().withSubject(email).withIssuedAt(new Date()).withJWTId(UUID.randomUUID().toString()).sign(algorithm);
+		return JWT.create()
+			.withSubject(email)
+			.withIssuedAt(new Date())
+			.withJWTId(UUID.randomUUID().toString())
+			.sign(algorithm);
 	}
 
 }

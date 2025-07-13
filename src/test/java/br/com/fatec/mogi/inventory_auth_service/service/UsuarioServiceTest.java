@@ -157,10 +157,7 @@ public class UsuarioServiceTest {
 		String email = "email@gmail.com";
 		String senha = "Senha123";
 		cadastrarUsuario(email, senha);
-		LoginRequestDTO dto = LoginRequestDTO.builder()
-				.email(email)
-				.senha(senha)
-				.build();
+		LoginRequestDTO dto = LoginRequestDTO.builder().email(email).senha(senha).build();
 		var tokens = usuarioService.login(dto);
 		assertNotNull(tokens);
 		assertNotNull(tokens.getAccessToken());
@@ -171,10 +168,7 @@ public class UsuarioServiceTest {
 	@Test
 	@DisplayName("Não deve realizar login para e-mail inválido")
 	void naoDeveRealizarLoginParaEmailInvalido() {
-		LoginRequestDTO dto = LoginRequestDTO.builder()
-				.email("email@gmail.com")
-				.senha("senha")
-				.build();
+		LoginRequestDTO dto = LoginRequestDTO.builder().email("email@gmail.com").senha("senha").build();
 		assertThrows(LoginInvalidoException.class, () -> {
 			usuarioService.login(dto);
 		});
@@ -186,10 +180,7 @@ public class UsuarioServiceTest {
 		String email = "email@gmail.com";
 		String senha = "Senha123";
 		cadastrarUsuario(email, senha);
-		LoginRequestDTO dto = LoginRequestDTO.builder()
-				.email(email)
-				.senha("senha")
-				.build();
+		LoginRequestDTO dto = LoginRequestDTO.builder().email(email).senha("senha").build();
 		assertThrows(LoginInvalidoException.class, () -> {
 			usuarioService.login(dto);
 		});
@@ -198,11 +189,12 @@ public class UsuarioServiceTest {
 	private Usuario cadastrarUsuario(String email, String senha) {
 		var funcao = funcaoRepository.findAll();
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email(email)
-				.senha(senha)
-				.funcaoId(funcao.getFirst().getId())
-				.build();
+			.nome("Usuario teste")
+			.email(email)
+			.senha(senha)
+			.funcaoId(funcao.getFirst().getId())
+			.build();
 		return usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
 	}
+
 }

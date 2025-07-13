@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
@@ -22,6 +23,14 @@ public class EmailServiceTest {
 		Usuario usuario = new Usuario("Rodrigo", "Senha123", "gernohovskirodrigo@gmail.com");
 		var enviado = emailService.enviarEmailConfirmacao(usuario);
 		assertTrue(enviado);
+	}
+
+	@Test
+	@DisplayName("Deve retornar falso ao realizar envio endereço inválido")
+	void deveRetornarFalseRealizarEnvioEnderecoInvalido() {
+		Usuario usuario = new Usuario("Rodrigo", "Senha123", "usuariotodotorto@gmail.com");
+		var enviado = emailService.enviarEmailConfirmacao(usuario);
+		assertFalse(enviado);
 	}
 
 }
