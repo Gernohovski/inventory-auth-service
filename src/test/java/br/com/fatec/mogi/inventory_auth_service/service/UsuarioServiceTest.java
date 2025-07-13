@@ -1,11 +1,13 @@
 package br.com.fatec.mogi.inventory_auth_service.service;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.exception.*;
+import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
 import br.com.fatec.mogi.inventory_auth_service.repository.FuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioFuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioRepository;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -123,20 +125,15 @@ public class UsuarioServiceTest {
 	@Test
 	@DisplayName("Deve confirmar o cadastro de um usuário com sucesso")
 	void deveConfirmarCadastroUsuarioComSucesso() {
-		var funcao = funcaoRepository.findAll();
-		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email("email@gmail.com")
-				.senha("Senha123")
-				.funcaoId(funcao.getFirst().getId())
-				.build();
-		var usuario = usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
-		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO.builder()
-				.email(usuario.getEmail().getEmail())
-				.build();
+		var usuario = cadastrarUsuario("email@gmail.com", "Senha123");
+		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO
+			.builder()
+			.email(usuario.getEmail().getEmail())
+			.build();
 		var confirmado = usuarioService.confirmarCadastro(confirmarCadastroUsuarioRequestDTO);
 		assertTrue(confirmado);
-		var usuarioSalvo = usuarioRepository.findByEmail(usuario.getEmail()).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+		var usuarioSalvo = usuarioRepository.findByEmail(usuario.getEmail())
+			.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 		assertTrue(usuarioSalvo.isAtivo());
 	}
 
@@ -145,13 +142,67 @@ public class UsuarioServiceTest {
 	void deveCriarUsuarioAtivoCasoNaoConseguirEnviarEmailConfirmacao() {
 		var funcao = funcaoRepository.findAll();
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email("emailinvalido@gmail.com")
-				.senha("Senha123")
-				.funcaoId(funcao.getFirst().getId())
-				.build();
+			.nome("Usuario teste")
+			.email("emailinvalido@gmail.com")
+			.senha("Senha123")
+			.funcaoId(funcao.getFirst().getId())
+			.build();
 		var usuario = usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
 		assertTrue(usuario.isAtivo());
 	}
 
+	@Test
+	@DisplayName("Deve realizar o login de um usuário com sucesso")
+	void deveRealizarLoginUsuarioComSucesso() {
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		LoginRequestDTO dto = LoginRequestDTO.builder()
+				.email(email)
+				.senha(senha)
+				.build();
+		var tokens = usuarioService.login(dto);
+		assertNotNull(tokens);
+		assertNotNull(tokens.getAccessToken());
+		assertNotNull(tokens.getRefreshToken());
+		assertEquals(900, tokens.getExpiresIn());
+	}
+
+	@Test
+	@DisplayName("Não deve realizar login para e-mail inválido")
+	void naoDeveRealizarLoginParaEmailInvalido() {
+		LoginRequestDTO dto = LoginRequestDTO.builder()
+				.email("email@gmail.com")
+				.senha("senha")
+				.build();
+		assertThrows(LoginInvalidoException.class, () -> {
+			usuarioService.login(dto);
+		});
+	}
+
+	@Test
+	@DisplayName("Não deve realizar login para senha inválida")
+	void naoDeveRealizarLoginParaSenhaInvalida() {
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		LoginRequestDTO dto = LoginRequestDTO.builder()
+				.email(email)
+				.senha("senha")
+				.build();
+		assertThrows(LoginInvalidoException.class, () -> {
+			usuarioService.login(dto);
+		});
+	}
+
+	private Usuario cadastrarUsuario(String email, String senha) {
+		var funcao = funcaoRepository.findAll();
+		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
+				.nome("Usuario teste")
+				.email(email)
+				.senha(senha)
+				.funcaoId(funcao.getFirst().getId())
+				.build();
+		return usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
+	}
 }

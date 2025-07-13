@@ -112,10 +112,59 @@ public class UsuarioControllerTest {
 	@Test
 	@DisplayName("Deve confirmar o cadastro de um usuário com sucesso")
 	void deveConfirmarCadastroUsuarioComSucesso() {
+		String email = "email123@gmail.com";
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO
+			.builder()
+			.email(email)
+			.build();
+		var confirmarCadastroUsuarioResponseDto = RestAssured.given()
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(confirmarCadastroUsuarioRequestDTO)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/confirmar-cadastro")
+			.then()
+			.statusCode(200)
+			.extract()
+			.body()
+			.as(ConfirmarCadastroUsuarioResponseDTO.class);
+
+		assertTrue(confirmarCadastroUsuarioResponseDto.isConfirmado());
+	}
+
+	@Test
+	@DisplayName("Não deve confirmar o cadastro de um usuário inválido")
+	void naoDeveConfirmarCadastroUsuarioInvalido() {
+		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO
+			.builder()
+			.email("email1234@gmail.com")
+			.build();
+		var errorMessage = RestAssured.given()
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(confirmarCadastroUsuarioRequestDTO)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/confirmar-cadastro")
+			.then()
+			.statusCode(400)
+			.extract()
+			.body()
+			.asString();
+
+		assertEquals("Usuário não encontrado.", errorMessage);
+	}
+
+	private void cadastrarUsuario(String email, String senha) {
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
 				.nome("Usuario teste")
-				.email("email123@gmail.com")
-				.senha("Senha123")
+				.email(email)
+				.senha(senha)
 				.funcaoId(1L)
 				.build();
 		RestAssured.given()
@@ -128,47 +177,6 @@ public class UsuarioControllerTest {
 				.post("/auth-service/v1/usuarios")
 				.then()
 				.statusCode(201);
-		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO.builder()
-				.email("email123@gmail.com")
-				.build();
-		var confirmarCadastroUsuarioResponseDto = RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(confirmarCadastroUsuarioRequestDTO)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/confirmar-cadastro")
-				.then()
-				.statusCode(200)
-				.extract()
-				.body()
-				.as(ConfirmarCadastroUsuarioResponseDTO.class);
-
-		assertTrue(confirmarCadastroUsuarioResponseDto.isConfirmado());
-	}
-
-	@Test
-	@DisplayName("Não deve confirmar o cadastro de um usuário inválido")
-	void naoDeveConfirmarCadastroUsuarioInvalido() {
-		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO.builder()
-				.email("email1234@gmail.com")
-				.build();
-		var errorMessage = RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(confirmarCadastroUsuarioRequestDTO)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/confirmar-cadastro")
-				.then()
-				.statusCode(400)
-				.extract()
-				.body()
-				.asString();
-
-		assertEquals("Usuário não encontrado.", errorMessage);
 	}
 
 }

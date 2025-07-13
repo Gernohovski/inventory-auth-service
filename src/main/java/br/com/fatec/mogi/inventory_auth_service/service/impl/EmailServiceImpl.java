@@ -21,20 +21,17 @@ import java.util.Map;
 @Profile("!test")
 public class EmailServiceImpl implements EmailService {
 
-	@Value("${mail-trap-token}")
+	@Value("${mail.trap.token}")
 	private String apiToken;
 
-	@Value("${auth-email-sender}")
+	@Value("${auth.email.sender}")
 	private String emailSender;
 
-	@Value("${confirm-email-code-url}")
+	@Value("${confirm.email.code.url}")
 	private String confirmUrl;
 
-	@Value("${confirm-template-id}")
+	@Value("${confirm.template.id}")
 	private String confirmTemplateId;
-
-	@Value("${confirm-code-ttl:300}")
-	private String confirmTtl;
 
 	private MailtrapClient mailtrapClient;
 
@@ -48,14 +45,15 @@ public class EmailServiceImpl implements EmailService {
 	public boolean enviarEmailConfirmacao(Usuario usuario) {
 		try {
 			MailtrapMail mail = MailtrapMail.builder()
-					.from(new Address(emailSender, "Confirmação e-mail"))
-					.to(List.of(new Address(usuario.getEmail().getEmail())))
-					.templateUuid(confirmTemplateId)
-					.templateVariables(Map.of("name", usuario.getNome(), "url", confirmUrl))
-					.build();
+				.from(new Address(emailSender, "Confirmação e-mail"))
+				.to(List.of(new Address(usuario.getEmail().getEmail())))
+				.templateUuid(confirmTemplateId)
+				.templateVariables(Map.of("name", usuario.getNome(), "url", confirmUrl))
+				.build();
 			var response = mailtrapClient.send(mail);
 			return response.isSuccess();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 	}
