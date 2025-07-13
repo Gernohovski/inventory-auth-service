@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Profile("test")
 public class EmailServiceFake implements EmailService {
 
-    @Override
-    public boolean enviarEmailConfirmacao(Usuario usuario) {
-        if (usuario.getEmail().getEmail().equals("emailinvalido@gmail.com")) {
-            return false;
-        }
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
-        return usuario.getEmail().getEmail().matches(emailRegex);
-    }
+	@Override
+	public boolean enviarEmailConfirmacao(Usuario usuario) {
+		if (usuario.getEmail().getEmail().equals("emailinvalido@gmail.com")) {
+			return false;
+		}
+		String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+		return usuario.getEmail().getEmail().matches(emailRegex);
+	}
 
 }

@@ -125,18 +125,20 @@ public class UsuarioServiceTest {
 	void deveConfirmarCadastroUsuarioComSucesso() {
 		var funcao = funcaoRepository.findAll();
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email("email@gmail.com")
-				.senha("Senha123")
-				.funcaoId(funcao.getFirst().getId())
-				.build();
+			.nome("Usuario teste")
+			.email("email@gmail.com")
+			.senha("Senha123")
+			.funcaoId(funcao.getFirst().getId())
+			.build();
 		var usuario = usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
-		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO.builder()
-				.email(usuario.getEmail().getEmail())
-				.build();
+		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO
+			.builder()
+			.email(usuario.getEmail().getEmail())
+			.build();
 		var confirmado = usuarioService.confirmarCadastro(confirmarCadastroUsuarioRequestDTO);
 		assertTrue(confirmado);
-		var usuarioSalvo = usuarioRepository.findByEmail(usuario.getEmail()).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+		var usuarioSalvo = usuarioRepository.findByEmail(usuario.getEmail())
+			.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 		assertTrue(usuarioSalvo.isAtivo());
 	}
 
@@ -145,11 +147,11 @@ public class UsuarioServiceTest {
 	void deveCriarUsuarioAtivoCasoNaoConseguirEnviarEmailConfirmacao() {
 		var funcao = funcaoRepository.findAll();
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email("emailinvalido@gmail.com")
-				.senha("Senha123")
-				.funcaoId(funcao.getFirst().getId())
-				.build();
+			.nome("Usuario teste")
+			.email("emailinvalido@gmail.com")
+			.senha("Senha123")
+			.funcaoId(funcao.getFirst().getId())
+			.build();
 		var usuario = usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
 		assertTrue(usuario.isAtivo());
 	}

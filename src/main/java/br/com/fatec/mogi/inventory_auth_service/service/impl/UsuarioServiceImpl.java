@@ -65,8 +65,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public LoginResponseDTO login(LoginRequestDTO dto) {
-		var usuario = usuarioRepository.findByEmail(new Email(dto.getEmail()))
-				.orElseThrow(LoginInvalidoException::new);
+		var usuario = usuarioRepository.findByEmail(new Email(dto.getEmail())).orElseThrow(LoginInvalidoException::new);
 		if (!BCrypt.checkpw(dto.getSenha(), usuario.getSenha().getSenha())) {
 			throw new LoginInvalidoException();
 		}

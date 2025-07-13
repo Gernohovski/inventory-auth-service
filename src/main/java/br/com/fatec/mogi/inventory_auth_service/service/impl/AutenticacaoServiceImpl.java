@@ -27,17 +27,17 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	@Value("${jwt.expiration.time}")
 	private Long expiration;
 
-    @Value("${jwt.refresh.expiration.time}")
-    private Long refreshExpiration;
+	@Value("${jwt.refresh.expiration.time}")
+	private Long refreshExpiration;
 
 	private final Algorithm algorithm = Algorithm.HMAC256(secret);
 
-    private final RedisService redisService;
+	private final RedisService redisService;
 
 	@Override
 	public LoginResponseDTO gerarAutenticacao(Usuario usuario) {
-        var accessToken = this.gerarToken(usuario);
-        var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
+		var accessToken = this.gerarToken(usuario);
+		var refreshToken = this.gerarRefreshToken(usuario.getEmail().getEmail());
 		redisService.salvar(TipoCache.REFRESH_TOKEN, refreshToken, usuario, refreshExpiration);
 		return new LoginResponseDTO(accessToken, refreshToken, expiration);
 	}
@@ -64,7 +64,7 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	}
 
 	public String gerarRefreshToken(String email) {
-        return JWT.create().withSubject(email).withIssuedAt(new Date()).sign(algorithm);
+		return JWT.create().withSubject(email).withIssuedAt(new Date()).sign(algorithm);
 	}
 
 }

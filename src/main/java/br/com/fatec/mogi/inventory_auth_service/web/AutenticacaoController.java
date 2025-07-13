@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth-service/v1/autenticacao")
 public record AutenticacaoController(UsuarioService usuarioService, AutenticacaoService autenticacaoService) {
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
-        var tokensDto = usuarioService.login(dto);
-        return ResponseEntity.status(HttpStatus.OK).body(tokensDto);
-    }
+	@PostMapping("/login")
+	public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
+		var tokensDto = usuarioService.login(dto);
+		return ResponseEntity.status(HttpStatus.OK).body(tokensDto);
+	}
 
-    @PutMapping("/refresh")
-    public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO dto) {
-        var tokensDto = autenticacaoService.gerarAutenticacao(dto);
-        return ResponseEntity.status(HttpStatus.OK).body(tokensDto);
-    }
+	@PutMapping("/refresh")
+	public ResponseEntity<RefreshTokenResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO dto) {
+		var tokensDto = autenticacaoService.gerarAutenticacao(dto);
+		return ResponseEntity.status(HttpStatus.OK).body(tokensDto);
+	}
 
 }

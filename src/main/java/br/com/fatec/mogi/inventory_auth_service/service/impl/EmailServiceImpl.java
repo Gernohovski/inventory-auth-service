@@ -45,14 +45,15 @@ public class EmailServiceImpl implements EmailService {
 	public boolean enviarEmailConfirmacao(Usuario usuario) {
 		try {
 			MailtrapMail mail = MailtrapMail.builder()
-					.from(new Address(emailSender, "Confirmação e-mail"))
-					.to(List.of(new Address(usuario.getEmail().getEmail())))
-					.templateUuid(confirmTemplateId)
-					.templateVariables(Map.of("name", usuario.getNome(), "url", confirmUrl))
-					.build();
+				.from(new Address(emailSender, "Confirmação e-mail"))
+				.to(List.of(new Address(usuario.getEmail().getEmail())))
+				.templateUuid(confirmTemplateId)
+				.templateVariables(Map.of("name", usuario.getNome(), "url", confirmUrl))
+				.build();
 			var response = mailtrapClient.send(mail);
 			return response.isSuccess();
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			return false;
 		}
 	}

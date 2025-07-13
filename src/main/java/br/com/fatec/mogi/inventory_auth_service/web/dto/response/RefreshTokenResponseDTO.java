@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RefreshTokenResponseDTO {
 
-    private String accessToken;
+	private String accessToken;
 
-    private String refreshToken;
+	private String refreshToken;
 
-    private Long expiresIn;
+	private Long expiresIn;
 
 }

@@ -27,8 +27,7 @@ public record UsuarioController(UsuarioService usuarioService) {
 	public ResponseEntity<ConfirmarCadastroUsuarioResponseDTO> confirmarCadastro(
 			@RequestBody ConfirmarCadastroUsuarioRequestDTO dto) {
 		var confirmado = usuarioService.confirmarCadastro(dto);
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(new ConfirmarCadastroUsuarioResponseDTO(confirmado));
+		return ResponseEntity.status(HttpStatus.OK).body(new ConfirmarCadastroUsuarioResponseDTO(confirmado));
 	}
 
 }
