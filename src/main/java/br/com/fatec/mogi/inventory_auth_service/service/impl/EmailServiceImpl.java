@@ -24,17 +24,14 @@ public class EmailServiceImpl implements EmailService {
 	@Value("${mail-trap-token}")
 	private String apiToken;
 
-	@Value("${auth-email-sender}")
+	@Value("${auth.email.sender}")
 	private String emailSender;
 
-	@Value("${confirm-email-code-url}")
+	@Value("${confirm.email.code.url}")
 	private String confirmUrl;
 
-	@Value("${confirm-template-id}")
+	@Value("${confirm.template.id}")
 	private String confirmTemplateId;
-
-	@Value("${confirm-code-ttl:300}")
-	private String confirmTtl;
 
 	private MailtrapClient mailtrapClient;
 
