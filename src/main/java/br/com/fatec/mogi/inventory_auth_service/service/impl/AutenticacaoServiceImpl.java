@@ -24,7 +24,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@ConfigurationProperties("jwt.secret")
 public class AutenticacaoServiceImpl implements AutenticacaoService {
 
 	@Value("${jwt.secret.key}")
