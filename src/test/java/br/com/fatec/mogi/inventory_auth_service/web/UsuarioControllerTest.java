@@ -11,8 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
@@ -113,25 +112,12 @@ public class UsuarioControllerTest {
 	@Test
 	@DisplayName("Deve confirmar o cadastro de um usuário com sucesso")
 	void deveConfirmarCadastroUsuarioComSucesso() {
-		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-			.nome("Usuario teste")
-			.email("email123@gmail.com")
-			.senha("Senha123")
-			.funcaoId(1L)
-			.build();
-		RestAssured.given()
-			.port(port)
-			.contentType(ContentType.JSON)
-			.body(cadastrarUsuarioRequestDTO)
-			.log()
-			.all()
-			.when()
-			.post("/auth-service/v1/usuarios")
-			.then()
-			.statusCode(201);
+		String email = "email123@gmail.com";
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
 		ConfirmarCadastroUsuarioRequestDTO confirmarCadastroUsuarioRequestDTO = ConfirmarCadastroUsuarioRequestDTO
 			.builder()
-			.email("email123@gmail.com")
+			.email(email)
 			.build();
 		var confirmarCadastroUsuarioResponseDto = RestAssured.given()
 			.port(port)
@@ -172,6 +158,25 @@ public class UsuarioControllerTest {
 			.asString();
 
 		assertEquals("Usuário não encontrado.", errorMessage);
+	}
+
+	private void cadastrarUsuario(String email, String senha) {
+		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
+				.nome("Usuario teste")
+				.email(email)
+				.senha(senha)
+				.funcaoId(1L)
+				.build();
+		RestAssured.given()
+				.port(port)
+				.contentType(ContentType.JSON)
+				.body(cadastrarUsuarioRequestDTO)
+				.log()
+				.all()
+				.when()
+				.post("/auth-service/v1/usuarios")
+				.then()
+				.statusCode(201);
 	}
 
 }
