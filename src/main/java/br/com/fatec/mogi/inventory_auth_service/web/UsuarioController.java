@@ -3,8 +3,10 @@ package br.com.fatec.mogi.inventory_auth_service.web;
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.SolicitarResetSenhaRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.CadastrarUsuarioResponseDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.ConfirmarCadastroUsuarioResponseDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.response.SolicitarResetSenhaResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,12 @@ public record UsuarioController(UsuarioService usuarioService) {
 			@RequestBody ConfirmarCadastroUsuarioRequestDTO dto) {
 		var confirmado = usuarioService.confirmarCadastro(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(new ConfirmarCadastroUsuarioResponseDTO(confirmado));
+	}
+
+	@GetMapping("/solicitar-redefinicao-senha")
+	public ResponseEntity<SolicitarResetSenhaResponseDTO> solicitarResetSenha(@RequestBody SolicitarResetSenhaRequestDTO dto) {
+		var emailEnviado = usuarioService.solicitarResetSenha(dto);
+		return ResponseEntity.status(HttpStatus.OK).body(new SolicitarResetSenhaResponseDTO(emailEnviado));
 	}
 
 }
