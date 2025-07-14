@@ -1,6 +1,7 @@
 package br.com.fatec.mogi.inventory_auth_service.web;
 
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.AlterarSenhaRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.SolicitarResetSenhaRequestDTO;
@@ -36,6 +37,12 @@ public record UsuarioController(UsuarioService usuarioService) {
 	public ResponseEntity<SolicitarResetSenhaResponseDTO> solicitarResetSenha(@RequestBody SolicitarResetSenhaRequestDTO dto) {
 		var emailEnviado = usuarioService.solicitarResetSenha(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(new SolicitarResetSenhaResponseDTO(emailEnviado));
+	}
+
+	@PutMapping("/alterar-senha")
+	public ResponseEntity<?> alterarSenha(@RequestBody AlterarSenhaRequestDTO dto) {
+		usuarioService.alterarSenha(dto);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 }
