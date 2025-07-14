@@ -6,4 +6,6 @@ public interface EmailService {
 
 	boolean enviarEmailConfirmacao(Usuario usuario);
 
+	boolean enviarEmailResetSenha(Usuario usuario);
+
 }
