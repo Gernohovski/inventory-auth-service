@@ -14,10 +14,7 @@ import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioRepository;
 import br.com.fatec.mogi.inventory_auth_service.service.AutenticacaoService;
 import br.com.fatec.mogi.inventory_auth_service.service.EmailService;
 import br.com.fatec.mogi.inventory_auth_service.service.UsuarioService;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.SolicitarResetSenhaRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.*;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +72,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 	@Override
 	public boolean solicitarResetSenha(SolicitarResetSenhaRequestDTO dto) {
-		return false;
+		var usuario = usuarioRepository.findByEmail(new Email(dto.getEmail()))
+				.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado."));
+		return emailService.enviarEmailResetSenha(usuario);
 	}
 
 }
