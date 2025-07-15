@@ -1,9 +1,7 @@
 package br.com.fatec.mogi.inventory_auth_service.service;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.*;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
 
 public interface UsuarioService {
@@ -13,5 +11,9 @@ public interface UsuarioService {
 	boolean confirmarCadastro(ConfirmarCadastroUsuarioRequestDTO dto);
 
 	LoginResponseDTO login(LoginRequestDTO dto);
+
+	boolean solicitarResetSenha(SolicitarResetSenhaRequestDTO dto);
+
+	void alterarSenha(AlterarSenhaRequestDTO dto);
 
 }

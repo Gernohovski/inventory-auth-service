@@ -33,4 +33,20 @@ public class EmailServiceTest {
 		assertFalse(enviado);
 	}
 
+	@Test
+	@DisplayName("Deve enviar e-mail de redefinição de senha com sucesso")
+	void deveEnviarEmailRedefinicaoSenhaComSucesso() {
+		Usuario usuario = new Usuario("Rodrigo", "Senha123", "gernohovskirodrigo@gmail.com");
+		var enviado = emailService.enviarEmailResetSenha(usuario);
+		assertTrue(enviado);
+	}
+
+	@Test
+	@DisplayName("Deve retornar falso ao realizar envio de redefinição de senha para endereço inválido")
+	void deveRetornarFalseRealizarEnvioRedefinicaoSenhaEnderecoInvalido() {
+		Usuario usuario = new Usuario("Rodrigo", "Senha123", "usuariotodotorto@gmail.com");
+		var enviado = emailService.enviarEmailConfirmacao(usuario);
+		assertFalse(enviado);
+	}
+
 }
