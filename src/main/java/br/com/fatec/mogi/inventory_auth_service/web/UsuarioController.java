@@ -33,7 +33,7 @@ public record UsuarioController(UsuarioService usuarioService) {
 		return ResponseEntity.status(HttpStatus.OK).body(new ConfirmarCadastroUsuarioResponseDTO(confirmado));
 	}
 
-	@GetMapping("/solicitar-redefinicao-senha")
+	@PutMapping("/solicitar-redefinicao-senha")
 	public ResponseEntity<SolicitarResetSenhaResponseDTO> solicitarResetSenha(@RequestBody SolicitarResetSenhaRequestDTO dto) {
 		var emailEnviado = usuarioService.solicitarResetSenha(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(new SolicitarResetSenhaResponseDTO(emailEnviado));

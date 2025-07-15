@@ -43,6 +43,8 @@ public class EmailServiceImpl implements EmailService {
 
 	private final RedisService redisService;
 
+	private final GeradorCodigo geradorCodigo;
+
 	@PostConstruct
 	void postConstruct() {
 		MailtrapConfig mailtrapConfig = new MailtrapConfig.Builder().token(apiToken).build();
@@ -69,7 +71,7 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public boolean enviarEmailResetSenha(Usuario usuario) {
 		try {
-			var codigo = GeradorCodigo.gerarCodigo();
+			var codigo = geradorCodigo.gerarCodigo();
 			MailtrapMail mail = MailtrapMail.builder()
 					.from(new Address(emailSender, "Redefinição de senha"))
 					.to(List.of(new Address(usuario.getEmail().getEmail())))
