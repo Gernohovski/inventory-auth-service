@@ -77,7 +77,7 @@ public class EmailServiceImpl implements EmailService {
 					.templateVariables(Map.of("name", usuario.getNome(), "code", codigo))
 					.build();
 			var response = mailtrapClient.send(mail);
-			redisService.salvar(TipoCache.CODIGO_RESET_SENHA, usuario.getEmail().getEmail().concat(codigo), usuario, 36000L);
+			redisService.salvar(TipoCache.CODIGO_RESET_SENHA, codigo, usuario, 36000L);
 			return response.isSuccess();
 		}
 		catch (Exception e) {

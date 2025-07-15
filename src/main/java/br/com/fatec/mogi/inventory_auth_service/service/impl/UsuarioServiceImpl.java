@@ -84,9 +84,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	@Transactional
 	public void alterarSenha(AlterarSenhaRequestDTO dto) {
-		var chave = dto.getEmail().concat(dto.getCodigo());
-		var usuario = (Usuario) redisService.buscar(TipoCache.CODIGO_RESET_SENHA, chave);
+		var usuario = (Usuario) redisService.buscar(TipoCache.CODIGO_RESET_SENHA, dto.getCodigo());
 		Optional.ofNullable(usuario).orElseThrow(SolicitacaoExpiradaExpcetion::new);
+		if (!usuario.getEmail().getEmail().equals(dto.getEmail())) {
+			throw new UsuariosDivergentesException();
+		}
 		usuario.setSenha(new Senha(dto.getNovaSenha()));
 		usuarioRepository.save(usuario);
 	}
