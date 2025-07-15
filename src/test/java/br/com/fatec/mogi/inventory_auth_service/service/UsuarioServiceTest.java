@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mindrot.jbcrypt.BCrypt;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -205,9 +204,7 @@ public class UsuarioServiceTest {
 		String email = "email@gmail.com";
 		String senha = "Senha123";
 		cadastrarUsuario(email, senha);
-		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder().email(email).build();
 		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
 		var emailEnviado = usuarioService.solicitarResetSenha(dto);
 		assertTrue(emailEnviado);
@@ -219,8 +216,8 @@ public class UsuarioServiceTest {
 	@DisplayName("Deve retornar exceção ao solicitar a redefinição de senha para usuário inválido")
 	void deveRetornarExcecaoSoliticarRedefinicaoSenhaUsuarioInvalido() {
 		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder()
-				.email(UUID.randomUUID().toString().concat("@gmail.com"))
-				.build();
+			.email(UUID.randomUUID().toString().concat("@gmail.com"))
+			.build();
 		assertThrows(UsuarioNaoEncontradoException.class, () -> {
 			usuarioService.solicitarResetSenha(dto);
 		});
@@ -235,18 +232,19 @@ public class UsuarioServiceTest {
 		String novaSenha = "Senha123456";
 		cadastrarUsuario(email, senha);
 		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+			.email(email)
+			.build();
 		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
 		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
 		assertTrue(emailEnviado);
 		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
-				.codigo(codigoEsperado)
-				.novaSenha(novaSenha)
-				.email(email)
-				.build();
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
 		usuarioService.alterarSenha(alterarSenhaRequestDTO);
-		var usuario = usuarioRepository.findByEmail(new Email(email)).orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+		var usuario = usuarioRepository.findByEmail(new Email(email))
+			.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 		assertTrue(BCrypt.checkpw(novaSenha, usuario.getSenha().getSenha()));
 	}
 
@@ -259,16 +257,16 @@ public class UsuarioServiceTest {
 		String novaSenha = "Senha123456";
 		cadastrarUsuario(email, senha);
 		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+			.email(email)
+			.build();
 		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
 		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
 		assertTrue(emailEnviado);
 		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
-				.codigo(codigoEsperado)
-				.novaSenha(novaSenha)
-				.email(UUID.randomUUID().toString().concat("@gmail.com"))
-				.build();
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(UUID.randomUUID().toString().concat("@gmail.com"))
+			.build();
 		assertThrows(UsuariosDivergentesException.class, () -> {
 			usuarioService.alterarSenha(alterarSenhaRequestDTO);
 		});
@@ -283,16 +281,16 @@ public class UsuarioServiceTest {
 		String novaSenha = "Senha12";
 		cadastrarUsuario(email, senha);
 		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+			.email(email)
+			.build();
 		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
 		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
 		assertTrue(emailEnviado);
 		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
-				.codigo(codigoEsperado)
-				.novaSenha(novaSenha)
-				.email(email)
-				.build();
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
 		assertThrows(SenhaInvalidaException.class, () -> {
 			usuarioService.alterarSenha(alterarSenhaRequestDTO);
 		});
@@ -307,10 +305,10 @@ public class UsuarioServiceTest {
 		String novaSenha = "Senha12";
 		cadastrarUsuario(email, senha);
 		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
-				.codigo(codigoEsperado)
-				.novaSenha(novaSenha)
-				.email(email)
-				.build();
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
 		assertThrows(SolicitacaoExpiradaExpcetion.class, () -> {
 			usuarioService.alterarSenha(alterarSenhaRequestDTO);
 		});

@@ -175,23 +175,21 @@ public class UsuarioControllerTest {
 		String email = UUID.randomUUID().toString().concat("@gmail.com");
 		String senha = "Senha123";
 		cadastrarUsuario(email, senha);
-		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder().email(email).build();
 
 		var solicitarResetSenhaResponseDTO = RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(dto)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
-				.then()
-				.statusCode(200)
-				.extract()
-				.body()
-				.as(SolicitarResetSenhaResponseDTO.class);
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(dto)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
+			.then()
+			.statusCode(200)
+			.extract()
+			.body()
+			.as(SolicitarResetSenhaResponseDTO.class);
 
 		assertTrue(solicitarResetSenhaResponseDTO.isEmailEnviado());
 	}
@@ -200,22 +198,22 @@ public class UsuarioControllerTest {
 	@DisplayName("Deve retornar erro ao tentar solicitar redefinição de senha para usuário inválido")
 	void deveRetornarErroTentarSolicitarRedefinicaoSenhaUsuarioInvalido() {
 		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder()
-				.email(UUID.randomUUID().toString().concat("@gmail.com"))
-				.build();
+			.email(UUID.randomUUID().toString().concat("@gmail.com"))
+			.build();
 
 		var errorMessage = RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(dto)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
-				.then()
-				.statusCode(400)
-				.extract()
-				.body()
-				.asString();
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(dto)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
+			.then()
+			.statusCode(400)
+			.extract()
+			.body()
+			.asString();
 
 		assertEquals("Usuário não encontrado.", errorMessage);
 	}
@@ -230,39 +228,39 @@ public class UsuarioControllerTest {
 		cadastrarUsuario(email, senha);
 		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
 		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
-				.email(email)
-				.build();
+			.email(email)
+			.build();
 		RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(solicitarResetSenhaDto)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
-				.then()
-				.statusCode(200)
-				.extract()
-				.body();
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(solicitarResetSenhaDto)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/solicitar-redefinicao-senha")
+			.then()
+			.statusCode(200)
+			.extract()
+			.body();
 
 		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
-				.codigo(codigoEsperado)
-				.email(email)
-				.novaSenha(novaSenha)
-				.build();
+			.codigo(codigoEsperado)
+			.email(email)
+			.novaSenha(novaSenha)
+			.build();
 
 		RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(alterarSenhaRequestDTO)
-				.log()
-				.all()
-				.when()
-				.put("/auth-service/v1/usuarios/alterar-senha")
-				.then()
-				.statusCode(204)
-				.extract()
-				.body();
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(alterarSenhaRequestDTO)
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/usuarios/alterar-senha")
+			.then()
+			.statusCode(204)
+			.extract()
+			.body();
 
 		var tokens = fazerLogin(email, novaSenha);
 
@@ -272,18 +270,18 @@ public class UsuarioControllerTest {
 	private LoginResponseDTO fazerLogin(String email, String senha) {
 		LoginRequestDTO dto = LoginRequestDTO.builder().senha(senha).email(email).build();
 		return RestAssured.given()
-				.port(port)
-				.contentType(ContentType.JSON)
-				.body(dto)
-				.log()
-				.all()
-				.when()
-				.post("/auth-service/v1/autenticacao/login")
-				.then()
-				.statusCode(200)
-				.extract()
-				.body()
-				.as(LoginResponseDTO.class);
+			.port(port)
+			.contentType(ContentType.JSON)
+			.body(dto)
+			.log()
+			.all()
+			.when()
+			.post("/auth-service/v1/autenticacao/login")
+			.then()
+			.statusCode(200)
+			.extract()
+			.body()
+			.as(LoginResponseDTO.class);
 	}
 
 	private void cadastrarUsuario(String email, String senha) {

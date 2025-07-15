@@ -77,7 +77,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 	@Override
 	public boolean solicitarResetSenha(SolicitarResetSenhaRequestDTO dto) {
 		var usuario = usuarioRepository.findByEmail(new Email(dto.getEmail()))
-				.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado."));
+			.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado."));
 		return emailService.enviarEmailResetSenha(usuario);
 	}
 

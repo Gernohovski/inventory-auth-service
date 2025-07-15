@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SolicitarResetSenhaResponseDTO {
 
-    private boolean emailEnviado;
+	private boolean emailEnviado;
 
 }

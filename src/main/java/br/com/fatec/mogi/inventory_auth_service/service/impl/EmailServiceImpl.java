@@ -73,11 +73,11 @@ public class EmailServiceImpl implements EmailService {
 		try {
 			var codigo = geradorCodigo.gerarCodigo();
 			MailtrapMail mail = MailtrapMail.builder()
-					.from(new Address(emailSender, "Redefinição de senha"))
-					.to(List.of(new Address(usuario.getEmail().getEmail())))
-					.templateUuid(resetPasswordTemplateId)
-					.templateVariables(Map.of("name", usuario.getNome(), "code", codigo))
-					.build();
+				.from(new Address(emailSender, "Redefinição de senha"))
+				.to(List.of(new Address(usuario.getEmail().getEmail())))
+				.templateUuid(resetPasswordTemplateId)
+				.templateVariables(Map.of("name", usuario.getNome(), "code", codigo))
+				.build();
 			var response = mailtrapClient.send(mail);
 			redisService.salvar(TipoCache.CODIGO_RESET_SENHA, codigo, usuario, 36000L);
 			return response.isSuccess();

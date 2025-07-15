@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AlterarSenhaRequestDTO {
 
-    private String codigo;
+	private String codigo;
 
-    private String email;
+	private String email;
 
-    private String novaSenha;
+	private String novaSenha;
 
 }
