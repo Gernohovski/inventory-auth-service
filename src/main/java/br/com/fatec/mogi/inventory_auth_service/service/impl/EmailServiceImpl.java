@@ -1,7 +1,10 @@
 package br.com.fatec.mogi.inventory_auth_service.service.impl;
 
+import br.com.fatec.mogi.inventory_auth_service.domain.enums.TipoCache;
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
 import br.com.fatec.mogi.inventory_auth_service.service.EmailService;
+import br.com.fatec.mogi.inventory_auth_service.service.RedisService;
+import br.com.fatec.mogi.inventory_auth_service.utils.GeradorCodigo;
 import io.mailtrap.client.MailtrapClient;
 import io.mailtrap.config.MailtrapConfig;
 import io.mailtrap.factory.MailtrapClientFactory;
@@ -33,7 +36,14 @@ public class EmailServiceImpl implements EmailService {
 	@Value("${confirm.template.id}")
 	private String confirmTemplateId;
 
+	@Value("${reset.password.template.id}")
+	private String resetPasswordTemplateId;
+
 	private MailtrapClient mailtrapClient;
+
+	private final RedisService redisService;
+
+	private final GeradorCodigo geradorCodigo;
 
 	@PostConstruct
 	void postConstruct() {
@@ -51,6 +61,25 @@ public class EmailServiceImpl implements EmailService {
 				.templateVariables(Map.of("name", usuario.getNome(), "url", confirmUrl))
 				.build();
 			var response = mailtrapClient.send(mail);
+			return response.isSuccess();
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean enviarEmailResetSenha(Usuario usuario) {
+		try {
+			var codigo = geradorCodigo.gerarCodigo();
+			MailtrapMail mail = MailtrapMail.builder()
+				.from(new Address(emailSender, "Redefinição de senha"))
+				.to(List.of(new Address(usuario.getEmail().getEmail())))
+				.templateUuid(resetPasswordTemplateId)
+				.templateVariables(Map.of("name", usuario.getNome(), "code", codigo))
+				.build();
+			var response = mailtrapClient.send(mail);
+			redisService.salvar(TipoCache.CODIGO_RESET_SENHA, codigo, usuario, 36000L);
 			return response.isSuccess();
 		}
 		catch (Exception e) {

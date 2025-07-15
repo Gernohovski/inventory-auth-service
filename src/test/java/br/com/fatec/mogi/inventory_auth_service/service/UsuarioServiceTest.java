@@ -1,13 +1,14 @@
 package br.com.fatec.mogi.inventory_auth_service.service;
 
+import br.com.fatec.mogi.inventory_auth_service.domain.enums.TipoCache;
 import br.com.fatec.mogi.inventory_auth_service.domain.exception.*;
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
+import br.com.fatec.mogi.inventory_auth_service.domain.model.valueObjects.Email;
 import br.com.fatec.mogi.inventory_auth_service.repository.FuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioFuncaoRepository;
 import br.com.fatec.mogi.inventory_auth_service.repository.UsuarioRepository;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.ConfirmarCadastroUsuarioRequestDTO;
-import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.utils.GeradorCodigo;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,19 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
 public class UsuarioServiceTest {
+
+	@MockitoBean
+	private GeradorCodigo geradorCodigo;
 
 	@Autowired
 	private UsuarioService usuarioService;
@@ -35,6 +43,9 @@ public class UsuarioServiceTest {
 
 	@Autowired
 	private UsuarioFuncaoRepository usuarioFuncaoRepository;
+
+	@Autowired
+	private RedisService redisService;
 
 	@AfterEach
 	void cleanUp() {
@@ -183,6 +194,123 @@ public class UsuarioServiceTest {
 		LoginRequestDTO dto = LoginRequestDTO.builder().email(email).senha("senha").build();
 		assertThrows(LoginInvalidoException.class, () -> {
 			usuarioService.login(dto);
+		});
+	}
+
+	@Test
+	@DisplayName("Deve solicitar a redefinição de senha com sucesso")
+	void deveSolicitarRedefinicaoSenhaComSucesso() {
+		String codigoEsperado = "123456";
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder().email(email).build();
+		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
+		var emailEnviado = usuarioService.solicitarResetSenha(dto);
+		assertTrue(emailEnviado);
+		var usuario = (Usuario) redisService.buscar(TipoCache.CODIGO_RESET_SENHA, codigoEsperado);
+		assertNotNull(usuario);
+	}
+
+	@Test
+	@DisplayName("Deve retornar exceção ao solicitar a redefinição de senha para usuário inválido")
+	void deveRetornarExcecaoSoliticarRedefinicaoSenhaUsuarioInvalido() {
+		SolicitarResetSenhaRequestDTO dto = SolicitarResetSenhaRequestDTO.builder()
+			.email(UUID.randomUUID().toString().concat("@gmail.com"))
+			.build();
+		assertThrows(UsuarioNaoEncontradoException.class, () -> {
+			usuarioService.solicitarResetSenha(dto);
+		});
+	}
+
+	@Test
+	@DisplayName("Deve redefinir a senha de um usuário com sucesso")
+	void deveRedefinirSenhUsuarioComSucesso() {
+		String codigoEsperado = UUID.randomUUID().toString();
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		String novaSenha = "Senha123456";
+		cadastrarUsuario(email, senha);
+		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
+			.email(email)
+			.build();
+		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
+		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
+		assertTrue(emailEnviado);
+		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
+		usuarioService.alterarSenha(alterarSenhaRequestDTO);
+		var usuario = usuarioRepository.findByEmail(new Email(email))
+			.orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
+		assertTrue(BCrypt.checkpw(novaSenha, usuario.getSenha().getSenha()));
+	}
+
+	@Test
+	@DisplayName("Deve lançar exceção ao tentar alterar senha usuário informando e-mail divergente")
+	void deveLancarExcecaoTentarAlterarSenhaUsuarioInformandoEmailDivergente() {
+		String codigoEsperado = UUID.randomUUID().toString();
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		String novaSenha = "Senha123456";
+		cadastrarUsuario(email, senha);
+		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
+			.email(email)
+			.build();
+		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
+		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
+		assertTrue(emailEnviado);
+		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(UUID.randomUUID().toString().concat("@gmail.com"))
+			.build();
+		assertThrows(UsuariosDivergentesException.class, () -> {
+			usuarioService.alterarSenha(alterarSenhaRequestDTO);
+		});
+	}
+
+	@Test
+	@DisplayName("Deve lançar exceção ao tentar alterar senha usuário informando senha inválida")
+	void deveLancarExcecaoTentarAlterarSenhaUsuarioInformandoSenhaInvalida() {
+		String codigoEsperado = UUID.randomUUID().toString();
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		String novaSenha = "Senha12";
+		cadastrarUsuario(email, senha);
+		SolicitarResetSenhaRequestDTO solicitarResetSenhaDto = SolicitarResetSenhaRequestDTO.builder()
+			.email(email)
+			.build();
+		when(geradorCodigo.gerarCodigo()).thenReturn(codigoEsperado);
+		var emailEnviado = usuarioService.solicitarResetSenha(solicitarResetSenhaDto);
+		assertTrue(emailEnviado);
+		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
+		assertThrows(SenhaInvalidaException.class, () -> {
+			usuarioService.alterarSenha(alterarSenhaRequestDTO);
+		});
+	}
+
+	@Test
+	@DisplayName("Deve lançar exceção ao tentar alterar senha usuário sem solicitação")
+	void deveLancarExcecaoTentarAlterarSenhaUsuarioSemSolicitacao() {
+		String codigoEsperado = UUID.randomUUID().toString();
+		String email = "email@gmail.com";
+		String senha = "Senha123";
+		String novaSenha = "Senha12";
+		cadastrarUsuario(email, senha);
+		AlterarSenhaRequestDTO alterarSenhaRequestDTO = AlterarSenhaRequestDTO.builder()
+			.codigo(codigoEsperado)
+			.novaSenha(novaSenha)
+			.email(email)
+			.build();
+		assertThrows(SolicitacaoExpiradaExpcetion.class, () -> {
+			usuarioService.alterarSenha(alterarSenhaRequestDTO);
 		});
 	}
 
