@@ -144,6 +144,26 @@ public class AutenticacaoControllerTest {
 		assertEquals("Usuário não autenticado.", errorMessage);
 	}
 
+	@Test
+	@DisplayName("Deve fazer logout do usuário com sucesso")
+	void deveFazerLogoutUsuarioComSucesso() {
+		String email = UUID.randomUUID().toString().concat("@gmail.com");
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		var tokens = fazerLogin(email, senha);
+		RestAssured.given()
+			.port(port)
+			.contentType(ContentType.JSON)
+			.header("X-ACCESS-TOKEN", tokens.getAccessToken())
+			.header("X-REFRESH-TOKEN", tokens.getRefreshToken())
+			.log()
+			.all()
+			.when()
+			.put("/auth-service/v1/autenticacao/logout")
+			.then()
+			.statusCode(204);
+	}
+
 	private LoginResponseDTO fazerLogin(String email, String senha) {
 		LoginRequestDTO dto = LoginRequestDTO.builder().senha(senha).email(email).build();
 		return RestAssured.given()
