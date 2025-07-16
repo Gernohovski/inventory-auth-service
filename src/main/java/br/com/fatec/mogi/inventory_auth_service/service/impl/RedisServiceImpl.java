@@ -29,4 +29,10 @@ public class RedisServiceImpl implements RedisService {
 		return redisTemplate.opsForValue().get(chaveFinal);
 	}
 
+	@Override
+	public void deletar(TipoCache tipoCache, String chave) {
+		String chaveFinal = tipoCache.getNome() + ":" + chave;
+		redisTemplate.delete(chaveFinal);
+	}
+
 }
