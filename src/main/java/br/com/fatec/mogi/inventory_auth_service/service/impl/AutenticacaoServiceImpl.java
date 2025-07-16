@@ -5,6 +5,7 @@ import br.com.fatec.mogi.inventory_auth_service.domain.exception.UsuarioNaoAuten
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
 import br.com.fatec.mogi.inventory_auth_service.service.AutenticacaoService;
 import br.com.fatec.mogi.inventory_auth_service.service.RedisService;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LogoutRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.RefreshTokenRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.RefreshTokenResponseDTO;
@@ -68,8 +69,13 @@ public class AutenticacaoServiceImpl implements AutenticacaoService {
 	@Override
 	public DecodedJWT decodeJwt(String jwt) {
 		JWTVerifier verifier = JWT.require(algorithm).build();
-
 		return verifier.verify(jwt);
+	}
+
+	@Override
+	public void logout(LogoutRequestDTO logoutRequestDTO) {
+		redisService.deletar(TipoCache.SESSAO_USUARIO, logoutRequestDTO.getAccessToken());
+		redisService.deletar(TipoCache.REFRESH_TOKEN, logoutRequestDTO.getRefreshToken());
 	}
 
 	private String gerarToken(Usuario usuario) {
