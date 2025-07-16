@@ -104,11 +104,11 @@ public class AutenticacaoServiceTest {
 	private void cadastrarUsuario(String email, String senha) {
 		var funcao = funcaoRepository.findAll();
 		CadastrarUsuarioRequestDTO cadastrarUsuarioRequestDTO = CadastrarUsuarioRequestDTO.builder()
-				.nome("Usuario teste")
-				.email(email)
-				.senha(senha)
-				.funcaoId(funcao.getFirst().getId())
-				.build();
+			.nome("Usuario teste")
+			.email(email)
+			.senha(senha)
+			.funcaoId(funcao.getFirst().getId())
+			.build();
 		usuarioService.cadastrarUsuario(cadastrarUsuarioRequestDTO);
 	}
 
