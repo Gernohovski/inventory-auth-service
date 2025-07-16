@@ -51,4 +51,10 @@ public class RedisServiceFake implements RedisService {
 		return entry.valor;
 	}
 
+	@Override
+	public void deletar(TipoCache tipoCache, String chave) {
+		String chaveFinal = tipoCache.getNome() + ":" + chave;
+		storage.remove(chaveFinal);
+	}
+
 }

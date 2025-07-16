@@ -2,6 +2,7 @@ package br.com.fatec.mogi.inventory_auth_service.web;
 
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.CadastrarUsuarioRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LoginRequestDTO;
+import br.com.fatec.mogi.inventory_auth_service.web.dto.request.LogoutRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.request.RefreshTokenRequestDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.LoginResponseDTO;
 import br.com.fatec.mogi.inventory_auth_service.web.dto.response.RefreshTokenResponseDTO;
@@ -142,6 +143,26 @@ public class AutenticacaoControllerTest {
 			.asString();
 
 		assertEquals("Usuário não autenticado.", errorMessage);
+	}
+
+	@Test
+	@DisplayName("Deve fazer logout do usuário com sucesso")
+	void deveFazerLogoutUsuarioComSucesso() {
+		String email = UUID.randomUUID().toString().concat("@gmail.com");
+		String senha = "Senha123";
+		cadastrarUsuario(email, senha);
+		var tokens = fazerLogin(email, senha);
+		RestAssured.given()
+				.port(port)
+				.contentType(ContentType.JSON)
+				.header("X-ACCESS-TOKEN", tokens.getAccessToken())
+				.header("X-REFRESH-TOKEN", tokens.getRefreshToken())
+				.log()
+				.all()
+				.when()
+				.put("/auth-service/v1/autenticacao/logout")
+				.then()
+				.statusCode(204);
 	}
 
 	private LoginResponseDTO fazerLogin(String email, String senha) {
