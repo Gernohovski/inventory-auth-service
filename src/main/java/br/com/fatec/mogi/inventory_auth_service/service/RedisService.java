@@ -8,4 +8,6 @@ public interface RedisService {
 
 	Object buscar(TipoCache tipoCache, String chave);
 
+	void deletar(TipoCache tipoCache, String chave);
+
 }

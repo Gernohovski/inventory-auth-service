@@ -1,6 +1,7 @@
 package br.com.fatec.mogi.inventory_auth_service.service;
 
 import br.com.fatec.mogi.inventory_auth_service.domain.model.Usuario;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class EmailServiceTest {
 
 	@Test
 	@DisplayName("Deve enviar e-mail de confirmação com sucesso")
+	@Disabled("Desabilitado temporariamente devido a limitação do serviço de envio de e-mail")
 	void deveEnviarEmailConfirmacaoComSucesso() {
 		Usuario usuario = new Usuario("Rodrigo", "Senha123", "gernohovskirodrigo@gmail.com");
 		var enviado = emailService.enviarEmailConfirmacao(usuario);
@@ -35,6 +37,7 @@ public class EmailServiceTest {
 
 	@Test
 	@DisplayName("Deve enviar e-mail de redefinição de senha com sucesso")
+	@Disabled("Desabilitado temporariamente devido a limitação do serviço de envio de e-mail")
 	void deveEnviarEmailRedefinicaoSenhaComSucesso() {
 		Usuario usuario = new Usuario("Rodrigo", "Senha123", "gernohovskirodrigo@gmail.com");
 		var enviado = emailService.enviarEmailResetSenha(usuario);
